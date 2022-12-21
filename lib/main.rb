@@ -1,12 +1,4 @@
-def select_random_word
-  new_word_list = []
-  File.open('word_list.txt', 'r') do |file|
-    file.readlines.each do |line|
-      new_word_list.push(line) if (line.length >= 5 && line.length <= 12)
-    end
-  end
-  new_word_list.sample.chomp
-end
+
 
 # alphabet = ('a'..'z').to_a
 master_word = select_random_word.split('')
