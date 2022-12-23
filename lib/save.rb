@@ -27,12 +27,12 @@ module Save
     @hidden_word = file[:hidden_word]
     @guessed_letters = file[:guessed_letters]
     @incorrect_guesses_left = file[:incorrect_guesses_left]
-    File.delete("saved/#{@saved_game}.yaml") if File.exist?("saved/#{@saved_game}.yaml")
     until @game_over
       guess_letter
       check_guess(@guess)
       check_win
     end
+    File.delete("saved/#{@saved_game}.yaml") if File.exist?("saved/#{@saved_game}.yaml")
     play_again
   end
 
@@ -53,11 +53,11 @@ module Save
     puts "Type your save file name to load the game"
     show_file_names
     file = gets.chomp
-    @saved_game = file
+    if file_names.include?(file)
+      @saved_game = file
+    else
+      puts "This file doesn't exist - please try again"
+      get_save_file
+    end
   end
-
-
-
-
-
 end
