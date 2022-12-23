@@ -1,7 +1,10 @@
 require_relative 'display'
+require_relative 'save'
+require 'yaml'
 
 class Game 
   include Display
+  include Save
   attr_accessor :master_word, :hidden_word, :guessed_letters
 
 
@@ -30,21 +33,30 @@ class Game
 
   def guess_letter 
     puts @hidden_word.join
-    puts "\nGuess a letter"
-    guess = gets.chomp.downcase
-    if guess.length > 1 || guess.match?(/[[:alpha:]]/) == false
+    puts guess_a_letter
+    puts save_text
+    @guess = gets.chomp.downcase
+    if @guess == 'save'
+      choose_filename
+      save_game
+      @game_over = true
+    elsif @guess == 'exit'
+      @game_over = true
+    elsif @guess.length > 1 || @guess.match?(/[[:alpha:]]/) == false
       puts "That is an invalid answer, please try again"
       guess_letter
-    elsif @hidden_word.include?(guess) || @guessed_letters.include?(guess)
+    elsif @hidden_word.include?(@guess) || @guessed_letters.include?(@guess)
       puts "You've already guessed this letter! Try again."
       guess_letter
     else
-      guess
+      @guess
     end
   end
 
   def check_guess(guess)
-    if @master_word.include?(guess)
+    if guess == 'save' || guess =='exit'
+      @game_over = true
+    elsif @master_word.include?(guess)
       @master_word.each_with_index do | letter, index |
         if guess == letter
           @hidden_word[index] = letter
@@ -81,13 +93,24 @@ class Game
 
   def game_logic
     puts how_to_play
-    select_master_word
-    create_hidden_word
+    player_choice
     until @game_over
-      check_guess(guess_letter)
+      guess_letter
+      check_guess(@guess)
       check_win
     end
     play_again
+  end
+
+  def player_choice
+    puts new_game_choice
+    choice = gets.chomp
+    if choice == '1'
+      select_master_word
+      create_hidden_word
+    else
+      load_game
+    end
   end
 
 end
